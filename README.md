@@ -7,6 +7,15 @@
       - data\USA_Housing.csv
       - .github\workflows (main_group3-python.yml)
 
+         /Group3-Python-Azure
+         |-- app.py
+         |-- requirements.txt
+         |-- .gitignore
+         |-- README.md
+         |-- .github/workflows
+         |   |-- /main_group3-python.yml
+         |-- /data/USA_Housing.csv
+         
 ### Github Repository Group3-Python-Azure
    - https://github.com/WilliamShi5358/Group3-Python-Azure.git
 
@@ -49,9 +58,9 @@
      - git push origin main
 
 ### Python app development
-   - data loadup
-   - show data
-   - filter data
+   - csv uploader method
+   - show dataframe as table
+   - Dynamic dataframe streamlit filter
    - visualazation data
 
 ### Presentation Slides to show the comprehension of the project

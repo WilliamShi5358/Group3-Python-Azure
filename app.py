@@ -1,42 +1,51 @@
-import streamlit as st
-import pandas as pd
-import numpy as np
+import streamlit as st #pip install streamlit
+import pandas as pd    #pip install pandas
+import numpy as np     #pip install numpy
 
-# catch the data from csv and return 
-def load_data():
-    #should catch data from oneDrive cloud, for now just use local data for demo 
-    path = './data/USA_Housing.csv'
-    df=pd.read_csv(path)
-    return df
-
-#create a funciton to filter the data
-def filter_data(data):
-    price_to_filter = st.slider('Home Price', min_value=1000000, max_value=2000000, value=(1000000,1200000))
-    filtered_df = data[data['Price'].between(*price_to_filter)]
-    st.dataframe(filtered_df)
-    
-def column_selector(data): 
-    areaIncome = currList['Avg. Area Income']
-    houseAge= currList['Avg. Area House Age']
-    areaPopulation= currList['Area Population']
-    houseAge_choice = st.sidebar.selectbox('Select your home age', houseAge)
-    areaIncome_choice = st.sidebar.selectbox('Select your area income:', areaIncome)
-    areaPopulation_choice = st.sidebar.selectbox('Select your area population',areaPopulation)  
-
-
-# show app title, header, button, and table
-st.header("INFO 4330 - Group 3")
-st.subheader('Python Streamlit App hooked with Azure web services')
+# show app header,title
+st.subheader('INFO 4330 Group 3 Python Streamlit App Deploying by Azure web service')
 st.write("USA Housing Data for demo streamlit filter ")
 
-#load data
-currList= load_data()
+#define global variable df 
+global df
+#Creating a method to upload the csv file, return df as pd dataframe
+#reference by https://docs.streamlit.io/develop/api-reference/widgets/st.file_uploader
+def uploader_csv():
+    #set sidebar sub header for file uploader
+    st.sidebar.subheader('Single CSV File Upload')
+    #deploy streamlit file_uploader method 
+      #coding
+    # deploy pandas library to read csv file, try and except
+      #coding
+    return df
 
-#click the button to show the list and filter
-#if st.button('click here to see all'):
-#   st.write(currList)
-   
-filter_data(currList)
-column_selector(currList)
+#create a method to filter the data, return filtered dataframe, the argument is the pd datafram 
+#reference: https://blog.streamlit.io/auto-generate-a-dataframe-filtering-ui-in-streamlit-with-filter_dataframe/
+def filter_dataframe(df: pd.DataFrame) -> pd.DataFrame:
+    #placed at sidebar, and define the subheader, and created a sentinel as onFilter to turn on the filter function 
+    st.sidebar.subheader('Filter Settings')
+    onFilter = st.sidebar.checkbox("Add filters")
+
+    if not onFilter:
+        return df
+
+    df = df.copy()
+    #  coding
+    #  coding
+    #  coding
+
+    return df
+
+#call the uploader_csv method
+try:
+    df = uploader_csv()
+except Exception:
+    print('please choose the csv file to upload for web app')
+
+#call datafram filter method 
+try: 
+   st.dataframe(filter_dataframe(df))
+except Exception as e:
+   print('please choose the csv file to upload for web app')
 
 
