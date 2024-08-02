@@ -1,20 +1,15 @@
 ## Group3-Python-Azure
    - coding structure
-      - app.py
-      - README.md
-      - requirements.txt
-      - .gitignore
-      - data\USA_Housing.csv
-      - .github\workflows (main_group3-python.yml)
-
-         /Group3-Python-Azure
-         |-- app.py
-         |-- requirements.txt
-         |-- .gitignore
-         |-- README.md
-         |-- .github/workflows
-         |   |-- /main_group3-python.yml
-         |-- /data/USA_Housing.csv
+      - /Group3-Python-Azure
+      -  |-- app.py
+      -  |-- requirements.txt
+      -  |-- .gitignore
+      -  |-- README.md
+      -  |-- .github/workflows
+      -  |   |-- /main_group3-python.yml
+      -  |-- /data/USA_Housing.csv
+      -  |-- package.json
+      -  |-- package-lock.json
          
 ### Github Repository Group3-Python-Azure
    - https://github.com/WilliamShi5358/Group3-Python-Azure.git
@@ -51,10 +46,10 @@
 ### Local Development Visual Studio Code
    - git clone https://github.com/WilliamShi5358/Group3-Python-Azure.git
    - run python on local host: streamlit run app.py
-   - before push updates to online github, process 'git pull origin main'
+   - before push updates to online github, should process 'git pull origin main' to avoid errors
    - and then 
-     - git add <specific files> 
-     - git commit -m ''
+     - git add <updated files> 
+     - git commit -m 'explain for any change'
      - git push origin main
 
 ### Python app development
