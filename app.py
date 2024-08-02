@@ -4,7 +4,7 @@ import numpy as np     #pip install numpy
 
 # show app header,title
 st.subheader('INFO 4330 Group 3 Python Streamlit App Deploying by Azure web service')
-st.write("USA Housing Data for demo streamlit filter ")
+st.write("Dataset of Global YouTube Statistic CSV for demo streamlit filter ")
 
 #define global variable df 
 global df
