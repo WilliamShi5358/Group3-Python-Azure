@@ -56,7 +56,7 @@
    - csv uploader method
    - show dataframe as table
    - Dynamic dataframe streamlit filter
-   - visualazation data
+   - visualization data to show chart bar
 
 ### Presentation Slides to show the comprehension of the project
 
