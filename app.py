@@ -41,7 +41,7 @@ def vitualization():
     path = './data/Global_YouTube_Statistics.csv'
     dataset =pd.read_csv(path)
     #coding for visualization 
-    st.bar_chart(dataset.groupby('Country')['Population'].mean(), x_label='Country', y_label='Population')
+    st.bar_chart(dataset.groupby('Country')['subscribers'].sum().sort_values(ascending=False).head(12), x_label='Country', y_label='subscribers')
     st.dataframe(pd.DataFrame(dataset))
     
     #coding for visualization 
