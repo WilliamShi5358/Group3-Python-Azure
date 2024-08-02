@@ -40,8 +40,14 @@ def filter_dataframe(df: pd.DataFrame) -> pd.DataFrame:
 def vitualization():
     path = './data/Global_YouTube_Statistics.csv'
     dataset =pd.read_csv(path)
+    dataset['Country'] = dataset['Country'].str.replace('india', 'India', case=False)
     #coding for visualization 
-    st.bar_chart(dataset.groupby('Country')['subscribers'].sum().sort_values(ascending=False).head(12), x_label='Country', y_label='subscribers')
+    chart1, chart2= st.columns(2)
+    with chart1:
+        st.bar_chart(dataset.groupby('Country')['subscribers'].sum().sort_values(ascending=False).head(10), x_label='Country', y_label='subscribers')
+    with chart2:
+        st.bar_chart(dataset.groupby('Country')['Population'].mean().sort_values(ascending=False).head(10), x_label='Country', y_label='Population')
+    
     st.dataframe(pd.DataFrame(dataset))
     
     #coding for visualization 
