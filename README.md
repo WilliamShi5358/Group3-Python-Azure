@@ -2,12 +2,14 @@
    - coding structure
       - /Group3-Python-Azure
       -  |-- app.py
+      -  |-- streamlit_app.py
+      -  |-- dynamicFilter.py
       -  |-- requirements.txt
       -  |-- .gitignore
       -  |-- README.md
       -  |-- .github/workflows
       -  |   |-- /main_group3-python.yml
-      -  |-- /data/USA_Housing.csv
+      -  |-- /data/Global_YouTube_Statistics.csv
       -  |-- package.json
       -  |-- package-lock.json
          
@@ -38,6 +40,7 @@
              - streamlit
              - pandas
              - numpy
+             - plotly.express
 ### Online Development Github
    - Group3-python-Azure online github repository is associated with Azure web services
    - Sync by Actions on github
@@ -46,6 +49,8 @@
 ### Local Development Visual Studio Code
    - git clone https://github.com/WilliamShi5358/Group3-Python-Azure.git
    - run python on local host: streamlit run app.py
+   - pip install pandas streamlit numpy plotly.express
+   - pip install -r requirements.txt 
    - before push updates to online github, should process 'git pull origin main' to avoid errors
    - and then 
      - git add <updated files> 
@@ -59,5 +64,21 @@
    - visualization data to show chart bar
 
 ### Presentation Slides to show the comprehension of the project
+   - How to build up the run environment on Azure Web Service
+     - Github reporsitory creation
+     - Azure web service configuration 
+   - Main page on streamlit app
+     - Preload CSV file (statistic YouTube)
+     - Filter and visualizatio CSV file (statistic YouTube)
+   - Dynamic Filter for any CSV file
+     - Load up data set
+     - present the filter functions
 
 ### Short Vedio clips to show the output of the project
+   - Running environment structure building up
+   - Home page 
+     - Preload function
+     - Filter and visualiztion demonstration
+   - Dynamic Filter
+     - Data upload
+     - Filter function for any selected CSV file  
