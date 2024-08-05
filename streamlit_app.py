@@ -18,7 +18,7 @@ def load_preloaded_data():
     return df
 
 
-def filter():
+def filter(loaded_df):
     # Title of the Streamlit app
     st.title('Statistics Dashboard')
 
@@ -27,8 +27,8 @@ def filter():
     # option = st.selectbox("Select an option:", ("Upload a CSV file", "Use YouTube Statistics", "Use USA Housing"))
 
     # Initialize an empty DataFrame
-    df = pd.DataFrame()
-    df = load_preloaded_data()
+    df = pd.DataFrame(loaded_df)
+   
     st.success("Loaded YouTube Statistics dataset!")
 
     # if option == "Upload a CSV file":
@@ -49,6 +49,14 @@ def filter():
     # If DataFrame is not empty, display the data and visualizations
     if not df.empty:
 
+        
+        # Display basic statistics
+        st.header('Basic Statistics')
+        st.write(df.describe())
+
+
+        categoricalCol= df.select_dtypes(include=['object']).columns
+
             # Option to use existing rank column or create a new rank
         use_existing_rank = st.sidebar.checkbox('My dataset has Rank colunm', value=True)
         
@@ -63,7 +71,7 @@ def filter():
         
         rank_df = df[(df['rank'] >= rank_range[0]) & (df['rank'] <= rank_range[1])]
         
-        rank_data_column = st.selectbox('Select column you want to display with rank', df.drop(columns=['rank']).columns,index=3)
+        rank_data_column = st.selectbox('Select column you want to display with rank', categoricalCol )
 
         if use_existing_rank:
             rank_chart_df = rank_df[[rank_data_column, 'rank']].set_index(rank_data_column)
@@ -73,20 +81,15 @@ def filter():
         st.bar_chart(rank_chart_df)
 
     
-        st.header('Dataset')
-        st.write(df)
-
-        # Display basic statistics
-        st.header('Basic Statistics')
-        st.write(df.describe())
+        
 
         
         create_Line_Bar = st.selectbox('Would you like to Create line chart to display analysis over time?', ['Yes', 'No'])
         if create_Line_Bar == 'Yes':
-            # time_column = st.selectbox('Select Time colunm', df.columns)
-            time_column =  'created_year'   
-            # data_column = st.selectbox('Select colunm you want to display over time', df.columns)
-            data_column = 'category'
+            time_column = st.selectbox('Select Time colunm', df.columns)
+            #time_column =  'created_year'   
+            data_column = st.selectbox('Select colunm you want to display over time', df.columns)
+            #data_column = 'category'
 
             # Ensure the time column is numeric
             df[time_column] = pd.to_numeric(df[time_column], errors='coerce')
@@ -97,7 +100,7 @@ def filter():
             # Sidebar selection for year range
             min_year = int(df[time_column].min())
             max_year = int(df[time_column].max())
-            year_range = st.sidebar.slider('Select year range', min_year, max_year, (min_year, max_year))
+            year_range = st.sidebar.slider('Select range', min_year, max_year, (min_year, max_year))
 
             # Filter the dataframe by the selected year range
             line_df = df[(df[time_column] >= year_range[0]) & (df[time_column] <= year_range[1])]
@@ -117,7 +120,7 @@ def filter():
         
         create_pie_chart = st.selectbox('Would you like to create a pie chart?', ['No', 'Yes'])
         if create_pie_chart == 'Yes':
-            categoricalCol= df.select_dtypes(include=['object']).columns
+            
             numericalCol= df.select_dtypes(include=['float64']).columns
             category_column = st.selectbox('Select category column for pie chart',categoricalCol)
             value_column = st.selectbox('Select value column for pie chart', numericalCol)
@@ -157,9 +160,9 @@ def filter():
             fig = px.bar(bar_data, x=category_column, y=value_column, title=f'Bar chart of {value_column} by {category_column}')
             st.plotly_chart(fig)
         
-        st.header('Top YouTubers by Subscribers')
+        st.header('Lets View the Best or Worst Performers')
         top_bottom = st.sidebar.selectbox('Select Top or Bottom', ['Top', 'Bottom'])
-        top_n = st.sidebar.slider('Select number of YouTubers', min_value=1, max_value=50, value=10)
+        top_n = st.sidebar.slider('Select number for range', min_value=1, max_value=50, value=10)
         x_axis_column = st.sidebar.selectbox('Select column for x-axis (string fields)', df.select_dtypes(include=['object']).columns)
         y_axis_column = st.sidebar.selectbox('Select column for y-axis (numeric fields)', df.select_dtypes(include=['number']).columns)
 

@@ -26,13 +26,10 @@ def uploader_csv():
             st.success("File uploaded successfully!")
 
     elif option == "Use YouTube Statistics":
-        df = load_preloaded_data()
-        st.success("Loaded YouTube Statistics dataset!")
-        
-    elif option == "Use USA Housing":
-        data_path = 'data/USA_Housing.csv'
+        data_path = 'data/Global_YouTube_Statistics.csv'
         df = pd.read_csv(data_path)
         st.success("Loaded YouTube Statistics dataset!")
+        
 
     #set sidebar sub header for file uploader
     #st.sidebar.subheader('Single CSV File Upload')
@@ -52,14 +49,17 @@ try:
     loaded_df = uploader_csv()
 
     st.dataframe(dynamic_filter.dynamicFilter(loaded_df))
+    default_filter.filter(loaded_df)
+
 except Exception:
     #if user doesn't uploads csv file, app can show the YouTube statistic dataset by default
-    default_filter.filter()
+   
     print('please choose the csv file to upload for web app')
 
 #call datafram filter method 
 try: 
    st.dataframe(dynamic_filter.dynamicFilter(loaded_df))
+
 except Exception as e:
    print('please choose the csv file to upload for web app')
 
