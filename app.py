@@ -11,14 +11,13 @@ st.write("Multi Columns Streamlit filter ")
 
 #define global variable df 
 global loaded_df
+
 #Creating a method to upload the csv file, return df as pd dataframe
 def uploader_csv():
     st.header("Choose a dataset")
-    option = st.selectbox("Select an option:", ("Upload a CSV file", "Use YouTube Statistics", "Use USA Housing"))
-
-    # Initialize an empty DataFrame
-    df = pd.DataFrame()
-
+    option = st.selectbox("Select an option:", ("Upload a CSV file", "Use YouTube Statistics"))
+    
+    # two options provided
     if option == "Upload a CSV file":
         uploaded_file = st.file_uploader("Upload your CSV file", type=["csv"])
         if uploaded_file is not None:
@@ -29,38 +28,18 @@ def uploader_csv():
         data_path = 'data/Global_YouTube_Statistics.csv'
         df = pd.read_csv(data_path)
         st.success("Loaded YouTube Statistics dataset!")
-        
-
-    #set sidebar sub header for file uploader
-    #st.sidebar.subheader('Single CSV File Upload')
-    #deploy streamlit file_uploader method 
-    #upload_file= st.sidebar.file_uploader(label='Choose csv file to upload',type=['csv'])
-    # deploy pandas library to read csv file
-    # if upload_file is not None:
-    #     try:
-    #         loaded_df= pd.read_csv(upload_file)
-    #         st.sidebar.success("Loaded CSV dataset!")
-    #     except Exception:
-    #         print("please choose the csv file to upload...")
     return df
-    
+
+#try to catch the dataset, if it is exist, run uploading and filter
 try:
     #user uploads csv file
     loaded_df = uploader_csv()
-
-    st.dataframe(dynamic_filter.dynamicFilter(loaded_df))
-    default_filter.filter(loaded_df)
-
+    if loaded_df is not None:
+         st.dataframe(dynamic_filter.dynamicFilter(loaded_df))
+         default_filter.filter(loaded_df)
 except Exception:
-    #if user doesn't uploads csv file, app can show the YouTube statistic dataset by default
-   
+    #if user doesn't uploads csv file, app can show the YouTube statistic dataset by default  
     print('please choose the csv file to upload for web app')
 
-#call datafram filter method 
-try: 
-   st.dataframe(dynamic_filter.dynamicFilter(loaded_df))
-
-except Exception as e:
-   print('please choose the csv file to upload for web app')
 
 
