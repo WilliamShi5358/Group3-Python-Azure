@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 # Function to load the preloaded dataset
-@st.cache
+
 def load_preloaded_data():
     data_path = 'data/Global_YouTube_Statistics.csv'
     df = pd.read_csv(data_path)
@@ -29,23 +29,7 @@ def filter(loaded_df):
     # Initialize an empty DataFrame
     df = pd.DataFrame(loaded_df)
    
-    st.success("Loaded YouTube Statistics dataset!")
-
-    # if option == "Upload a CSV file":
-    #     uploaded_file = st.file_uploader("Upload your CSV file", type=["csv"])
-    #     if uploaded_file is not None:
-    #         df = pd.read_csv(uploaded_file)
-    #         st.success("File uploaded successfully!")
-
-    # elif option == "Use YouTube Statistics":
-    #     df = load_preloaded_data()
-    #     st.success("Loaded YouTube Statistics dataset!")
-        
-    # elif option == "Use USA Housing":
-    #     data_path = 'data/USA_Housing.csv'
-    #     df = pd.read_csv(data_path)
-    #     st.success("Loaded YouTube Statistics dataset!")
-
+    
     # If DataFrame is not empty, display the data and visualizations
     if not df.empty:
 
@@ -57,12 +41,21 @@ def filter(loaded_df):
 
         categoricalCol= df.select_dtypes(include=['object']).columns
 
+        st.header('Lets create Rank Chart')
+        st.subheader('select the column you want to rank by in the sidebar')
+        st.sidebar.header('Rank Chart')
+
             # Option to use existing rank column or create a new rank
         use_existing_rank = st.sidebar.checkbox('My dataset has Rank colunm', value=True)
         
         if not use_existing_rank:
             rank_column = st.sidebar.selectbox('Select column to generate rank by', df.columns)
-            df['rank'] = df[rank_column].rank(method='min', ascending=False)
+            
+            if df[rank_column].dtype == 'object':
+                category_counts = df[rank_column].value_counts()
+                df['rank'] = df[rank_column].map(category_counts.rank(ascending=False, method='min'))
+            else:
+                df['rank'] = df[rank_column].rank(method='min', ascending=False)
 
         # Slider to filter by rank
         min_rank = int(df['rank'].min())
@@ -82,14 +75,12 @@ def filter(loaded_df):
 
     
         
-
-        
-        create_Line_Bar = st.selectbox('Would you like to Create line chart to display analysis over time?', ['Yes', 'No'])
+        create_Line_Bar = st.selectbox('Would you like to Create line chart to display analysis over time?', ['No','Yes'])
         if create_Line_Bar == 'Yes':
             time_column = st.selectbox('Select Time colunm', df.columns)
-            #time_column =  'created_year'   
+            
             data_column = st.selectbox('Select colunm you want to display over time', df.columns)
-            #data_column = 'category'
+            
 
             # Ensure the time column is numeric
             df[time_column] = pd.to_numeric(df[time_column], errors='coerce')
