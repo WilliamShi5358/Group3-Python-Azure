@@ -3,28 +3,12 @@ import pandas as pd
 import plotly.express as px
 # Function to load the preloaded dataset
 
-def load_preloaded_data():
-    data_path = 'data/Global_YouTube_Statistics.csv'
-    df = pd.read_csv(data_path)
-    df.columns = df.columns.str.strip()
-    df['Country'] = df['Country'].str.title()
-    numeric_columns = ['subscribers', 'video views', 'uploads', 'video_views_rank', 
-                       'country_rank', 'channel_type_rank', 'video_views_for_the_last_30_days', 
-                       'lowest_monthly_earnings', 'highest_monthly_earnings', 
-                       'lowest_yearly_earnings', 'highest_yearly_earnings', 'created_year']
-    df[numeric_columns] = df[numeric_columns].apply(pd.to_numeric, errors='coerce')
-    df = df.dropna(subset=['subscribers', 'video views', 'uploads'])
-    df = df.drop_duplicates()
-    return df
+
 
 
 def filter(loaded_df):
     # Title of the Streamlit app
-    st.title('Statistics Dashboard')
-
-    # Main screen options
-    # st.header("Choose a dataset")
-    # option = st.selectbox("Select an option:", ("Upload a CSV file", "Use YouTube Statistics", "Use USA Housing"))
+    st.title('Dashboard for Data Analysis')
 
     # Initialize an empty DataFrame
     df = pd.DataFrame(loaded_df)
@@ -38,48 +22,64 @@ def filter(loaded_df):
         st.header('Basic Statistics')
         st.write(df.describe())
 
+        
+        st.header('Lets View the Best or Worst Performers')
+        st.sidebar.header('Top/Bottom Performers')
+        top_bottom = st.sidebar.selectbox('Select Top or Bottom', ['Top', 'Bottom'])
+        top_n = st.sidebar.slider('Select number for range', min_value=1, max_value=50, value=10)
+        x_axis_column = st.sidebar.selectbox('Select column for x-axis (string fields)', df.select_dtypes(include=['object']).columns, index=None)
+        y_axis_column = st.sidebar.selectbox('Select column for y-axis (numeric fields)', df.select_dtypes(include=['number']).columns,index=None)
+
+        if top_bottom == 'Top':
+            youtubers = df.nlargest(top_n, y_axis_column)
+        else:
+            youtubers = df.nsmallest(top_n, y_axis_column)
+
+        fig = px.bar(youtubers, x=x_axis_column, y=y_axis_column, title=f'{top_bottom} {top_n} by {y_axis_column}')
+        st.plotly_chart(fig)
 
         categoricalCol= df.select_dtypes(include=['object']).columns
+        create_rank_Bar = st.selectbox('Would you like to rank your data?', ['No','Yes'])
+        if create_rank_Bar == 'Yes':
+            st.header('Lets create Rank Chart')
+            st.subheader('select the column you want to rank by in the sidebar')
+            st.sidebar.header('Rank Chart')
 
-        st.header('Lets create Rank Chart')
-        st.subheader('select the column you want to rank by in the sidebar')
-        st.sidebar.header('Rank Chart')
-
-            # Option to use existing rank column or create a new rank
-        use_existing_rank = st.sidebar.checkbox('My dataset has Rank colunm', value=True)
-        
-        if not use_existing_rank:
-            rank_column = st.sidebar.selectbox('Select column to generate rank by', df.columns)
+                # Option to use existing rank column or create a new rank
+            use_existing_rank = st.sidebar.checkbox('My dataset has Rank colunm', value=True)
             
-            if df[rank_column].dtype == 'object':
-                category_counts = df[rank_column].value_counts()
-                df['rank'] = df[rank_column].map(category_counts.rank(ascending=False, method='min'))
+            if not use_existing_rank:
+                rank_column = st.sidebar.selectbox('Select column to generate rank by', df.columns,index=None)
+                
+                if df[rank_column].dtype == 'object':
+                    category_counts = df[rank_column].value_counts()
+                    df['rank'] = df[rank_column].map(category_counts.rank(ascending=False, method='min'))
+                else:
+                    df['rank'] = df[rank_column].rank(method='min', ascending=False)
+
+            # Slider to filter by rank
+            min_rank = int(df['rank'].min())
+            max_rank = int(df['rank'].max())
+            rank_range = st.sidebar.slider('Select rank range', min_rank, max_rank, (min_rank, max_rank))
+            
+            rank_df = df[(df['rank'] >= rank_range[0]) & (df['rank'] <= rank_range[1])]
+            
+            rank_data_column = st.selectbox('Select column you want to display with rank', categoricalCol,index=None) 
+
+            if use_existing_rank:
+                rank_chart_df = rank_df[[rank_data_column, 'rank']].set_index(rank_data_column)
             else:
-                df['rank'] = df[rank_column].rank(method='min', ascending=False)
-
-        # Slider to filter by rank
-        min_rank = int(df['rank'].min())
-        max_rank = int(df['rank'].max())
-        rank_range = st.sidebar.slider('Select rank range', min_rank, max_rank, (min_rank, max_rank))
-        
-        rank_df = df[(df['rank'] >= rank_range[0]) & (df['rank'] <= rank_range[1])]
-        
-        rank_data_column = st.selectbox('Select column you want to display with rank', categoricalCol )
-
-        if use_existing_rank:
-            rank_chart_df = rank_df[[rank_data_column, 'rank']].set_index(rank_data_column)
-        else:
-            rank_chart_df = rank_df[[rank_data_column, 'rank']].set_index(rank_data_column)
-        
-        st.bar_chart(rank_chart_df)
+                rank_chart_df = rank_df[[rank_data_column, 'rank']].set_index(rank_data_column)
+            
+            st.bar_chart(rank_chart_df)
 
     
         
         create_Line_Bar = st.selectbox('Would you like to Create line chart to display analysis over time?', ['No','Yes'])
         if create_Line_Bar == 'Yes':
-            time_column = st.selectbox('Select Time colunm', df.columns)
+            time_column = st.selectbox('Select Time colunm', df.columns,index=None)
             
-            data_column = st.selectbox('Select colunm you want to display over time', df.columns)
+            data_column = st.selectbox('Select colunm you want to display over time', df.columns,index=None)
             
 
             # Ensure the time column is numeric
@@ -113,8 +113,8 @@ def filter(loaded_df):
         if create_pie_chart == 'Yes':
             
             numericalCol= df.select_dtypes(include=['float64']).columns
-            category_column = st.selectbox('Select category column for pie chart',categoricalCol)
-            value_column = st.selectbox('Select value column for pie chart', numericalCol)
+            category_column = st.selectbox('Select category column for pie chart',categoricalCol,index=None)
+            value_column = st.selectbox('Select value column for pie chart', numericalCol,index=None)
             # Sidebar selection for categories to include in the pie chart
             st.sidebar.header('Pie Chart')
             unique_categories = df[category_column].unique()
@@ -134,8 +134,8 @@ def filter(loaded_df):
 
             categoricalCol= df.select_dtypes(include=['object']).columns
             numericalCol= df.select_dtypes(include=['float64']).columns
-            category_column = st.selectbox('Select category column for bar chart', categoricalCol)
-            value_column = st.selectbox('Select value column for bar chart', numericalCol)
+            category_column = st.selectbox('Select category column for bar chart', categoricalCol,index=None)
+            value_column = st.selectbox('Select value column for bar chart', numericalCol,index=None)
 
             # Sidebar selection for categories to include in the bar chart
             unique_categories = df[category_column].unique()
@@ -151,19 +151,3 @@ def filter(loaded_df):
             fig = px.bar(bar_data, x=category_column, y=value_column, title=f'Bar chart of {value_column} by {category_column}')
             st.plotly_chart(fig)
         
-        st.header('Lets View the Best or Worst Performers')
-        top_bottom = st.sidebar.selectbox('Select Top or Bottom', ['Top', 'Bottom'])
-        top_n = st.sidebar.slider('Select number for range', min_value=1, max_value=50, value=10)
-        x_axis_column = st.sidebar.selectbox('Select column for x-axis (string fields)', df.select_dtypes(include=['object']).columns)
-        y_axis_column = st.sidebar.selectbox('Select column for y-axis (numeric fields)', df.select_dtypes(include=['number']).columns)
-
-        if top_bottom == 'Top':
-            youtubers = df.nlargest(top_n, y_axis_column)
-        else:
-            youtubers = df.nsmallest(top_n, y_axis_column)
-
-        fig = px.bar(youtubers, x=x_axis_column, y=y_axis_column, title=f'{top_bottom} {top_n} by {y_axis_column}')
-        st.plotly_chart(fig)
-
-
- 
